@@ -758,10 +758,19 @@ Blockly.Xml.applyDataTagNodes_ = function(xmlChildren, block) {
  * @private
  */
 Blockly.Xml.applyFieldTagNodes_ = function(xmlChildren, block) {
+  var nameValuePairs = {}
   for (var i = 0, xmlChild; (xmlChild = xmlChildren[i]); i++) {
     var nodeName = xmlChild.getAttribute('name');
-    Blockly.Xml.domToField_(block, nodeName, xmlChild);
+    var nodeValue = xmlChild.textContent;
+    var field = block.getField(nodeName);
+    if (!field) {
+      console.warn('Ignoring non-existent field ' + fieldName + ' in block ' +
+          block.type);
+    } else {
+      nameValuePairs[nodeName] = nodeValue;
+    }
   }
+  block.setFieldValues(nameValuePairs);
 };
 
 /**

@@ -1120,6 +1120,45 @@ Blockly.Block.prototype.getFieldValue = function(name) {
 };
 
 /**
+ * Sets the values of the given fields for this block.
+ * @param {Object} nameNewValuePairs The value to set.
+ * @param {!string} name The name of the field to set the value of.
+ */
+Blockly.Block.prototype.setFieldValues = function(nameNewValuePairs) {
+  var allNamedFields = [];
+  var allUnsetNamedFields;
+  var changedFieldValue = true;
+  var i, j, field, input, newValue;
+
+  for (i = 0, input; (input = this.inputList[i]); i++) {
+    for (j = 0, field; (field = input.fieldRow[j]); j++) {
+      if (field.name) {
+        allNamedFields.push(field);
+      }
+    }
+  }
+
+  allUnsetNamedFields = allNamedFields.slice();
+
+  while (changedFieldValue) {
+    i = 0;
+    changedFieldValue = false;
+    while (i < allUnsetNamedFields.length) {
+      field = allUnsetNamedFields[i];
+      newValue = nameNewValuePairs[field.name];
+      if (typeof newValue !== "undefined" && field.isValueValid(newValue)) {
+        field.setValue(newValue);
+        allUnsetNamedFields.splice(i, 1);
+        changedFieldValue = true;
+      } else {
+        field.refresh();
+        i++;
+      }
+    }
+  }
+};
+
+/**
  * Sets the value of the given field for this block.
  * @param {*} newValue The value to set.
  * @param {!string} name The name of the field to set the value of.

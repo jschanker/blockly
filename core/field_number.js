@@ -245,6 +245,18 @@ Blockly.FieldNumber.prototype.getPrecision = function() {
 };
 
 /**
+ * Determine whether the input value is a valid number (must fulfill the
+ * constraints placed on the field).
+ * @param {*=} value The input value to check.
+ * @return {boolean} True if the input value is a valid number.
+ * @private
+ */
+Blockly.FieldNumber.prototype.isValueClassValid_ = function(value) {
+  return typeof value === "number" && 
+    this.min_ <= value && value <= this.max_;
+}
+
+/**
  * Ensure that the input value is a valid number (must fulfill the
  * constraints placed on the field).
  * @param {*=} opt_newValue The input value.

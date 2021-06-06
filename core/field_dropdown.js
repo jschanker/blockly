@@ -496,22 +496,43 @@ Blockly.FieldDropdown.prototype.getOptions = function(opt_useCache) {
 };
 
 /**
+ * Regenerate options and change selected option to first one if selected one 
+ * is no longer available
+ */
+Blockly.FieldDropdown.prototype.refresh = function() {
+  var options = this.getOptions(false);
+  if(!this.isValueClassValid_(this.value_)) {
+    this.setValue(options[0][1]);
+  }
+};
+
+/**
+ * Determine whether input value is a valid language-neutral option.
+ * @param {*} value The value to check.
+ * @return {boolean} True if the field can be set to this value.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.isValueClassValid_ = function(value) {
+  var isValueValid = false;
+  var options = this.getOptions(true);
+  for (var i = 0, option; (option = options[i]); i++) {
+    // Options are tuples of human-readable text and language-neutral values.
+    if (option[1] == value) {
+      isValueValid = true;
+      break;
+    }
+  }
+  return isValueValid;
+}
+
+/**
  * Ensure that the input value is a valid language-neutral option.
  * @param {*=} opt_newValue The input value.
  * @return {?string} A valid language-neutral option, or null if invalid.
  * @protected
  */
 Blockly.FieldDropdown.prototype.doClassValidation_ = function(opt_newValue) {
-  var isValueValid = false;
-  var options = this.getOptions(true);
-  for (var i = 0, option; (option = options[i]); i++) {
-    // Options are tuples of human-readable text and language-neutral values.
-    if (option[1] == opt_newValue) {
-      isValueValid = true;
-      break;
-    }
-  }
-  if (!isValueValid) {
+  if (!this.isValueClassValid_(opt_newValue)) {
     if (this.sourceBlock_) {
       console.warn('Cannot set the dropdown\'s value to an unavailable option.' +
         ' Block type: ' + this.sourceBlock_.type + ', Field name: ' + this.name +

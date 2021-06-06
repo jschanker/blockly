@@ -792,6 +792,37 @@ Blockly.Field.prototype.forceRerender = function() {
 };
 
 /**
+ * Used to determine whether the field can be set to a given value.
+ * @param {*} value The value to check.
+ * @return {boolean} True if the field can be set to this value.
+ */
+Blockly.Field.prototype.isValueValid = function(value) {
+  var localValidator = this.getValidator();
+  return this.isValueClassValid_(value) && 
+    (!localValidator || localValidator.call(this, value) !== null);
+}
+
+/**
+ * Used to validate a value. Returns true if not null or undefined by default. 
+ * Can be overridden by subclasses, see FieldDropdown.
+ * @param {*=} value The value to be validated.
+ * @return {boolean} True if the value is valid.
+ * @protected
+ */
+Blockly.Field.prototype.isValueClassValid_ = function(value) {
+  return value !== null && typeof value !== "undefined";
+};
+
+/**
+ * Force a field refresh (e.g., regenerate options for FieldDropdown)
+ * Should be overridden by subclasses with dynamic field values.
+ * No-op by default.
+ */
+Blockly.Field.prototype.refresh = function() {
+  // NOP
+};
+
+/**
  * Used to change the value of the field. Handles validation and events.
  * Subclasses should override doClassValidation_ and doValueUpdate_ rather
  * than this method.
